@@ -7,7 +7,8 @@ const {
   GraphQLString,
   GraphQLInt,
   GraphQLSchema,
-  GraphQLID
+  GraphQLID,
+  GraphQLList
 } = require('graphql');
 
 // array of tasks
@@ -17,12 +18,14 @@ const tasks = [
     title: 'Create your first webpage',
     weight: 1,
     description: 'Create your first HTML file 0-index.html with : -Add the doctype on the first line (without any comment) -After the doctype, open and close a html tag Open your file in your browser (the page should be blank)',
+    projectId: '1',
   },
   {
     id: '2',
     title: 'Structure your webpage',
     weight: 1,
     description: 'Copy the content of 0-index.html into 1-index.html Create the head and body sections inside the html tag, create the head and body tags (empty) in this order',
+    projectId: '1',
   },
 ];
 
@@ -42,11 +45,7 @@ const projects = [
   },
 ]
 
-// add GraphQLObjectType object using the object destructuring syntax (const {prop1, prop2, prop3,…, propN} = object and object in our case is graphql)
-
-// create a new GraphQLObjectType: TaskType which contains 2 parameters:
-// name: Task
-// fields property: object contains a set of properties. In our case, fields will contain:
+// TaskType 
 const TaskType = new GraphQLObjectType({
   name: 'Task',
   fields: () => ({
@@ -54,6 +53,13 @@ const TaskType = new GraphQLObjectType({
     title: { type: GraphQLString },
     weight: { type: GraphQLInt },
     description: { type: GraphQLString },
+    ProjectId: { type: GraphQLID },
+    project: {
+      type: ProjectType,
+      resolve(parent, args) {
+        return _.find(projects, { id: parent.projectId });
+      },
+    },
   }),
 });
 
@@ -65,6 +71,12 @@ const ProjectType = new GraphQLObjectType({
     title: { type: GraphQLString },
     weight: { type: GraphQLInt },
     description: { type: GraphQLString },
+    tasks: {
+      type: new GraphQLList(TaskType),
+      resolve(parent, args) {
+        return _.filter(tasks, { projectId: parent.id });
+      },
+    },
   }),
 });
 
