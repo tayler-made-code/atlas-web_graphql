@@ -13,7 +13,7 @@ build:
 
 # Run the Docker container with directory binding
 run:
-	docker run -d --name $(DOCKER_CONTAINER_NAME) -v ${HOST_DIRECTORY}:${CONTAINER_DIRECTORY} ${DOCKER_IMAGE_NAME}
+	docker run -d -p 4000:4000 --name $(DOCKER_CONTAINER_NAME) -v ${HOST_DIRECTORY}:${CONTAINER_DIRECTORY} ${DOCKER_IMAGE_NAME}
 
 # Execute a command inside the Docker container
 exec:
